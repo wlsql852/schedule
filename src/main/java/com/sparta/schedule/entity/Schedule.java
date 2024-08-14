@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class Schedule {
     private Long id;
     private String todo;
+    private String manager;
     private String password;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
@@ -21,6 +22,7 @@ public class Schedule {
 
     public Schedule(ScheduleRequestDto requestDto) {
         this.todo = requestDto.getTodo();
+        this.manager = requestDto.getManager();
         this.password = requestDto.getPassword();
         LocalDateTime now = LocalDateTime.now();
         this.createDate = now;
