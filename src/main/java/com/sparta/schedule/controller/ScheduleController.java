@@ -121,6 +121,24 @@ public class ScheduleController {
             });
         }
     }
+    //4단계 : 선택한 일정 수정
+    @PutMapping("/schedules/edit/{id}")
+    public ScheduleResponseDto update(@PathVariable Long id, @RequestBody ScheduleRequestDto requestDto) throws IllegalAccessException {
+        Schedule schedule = findById(id);
+        if(schedule != null) {
+            if(schedule.getPassword().equals(requestDto.getPassword())) {
+                String sql = "UPDATE schedule SET todo=?, manager=?, updateDate=? WHERE scheduleId = ?";
+                jdbcTemplate.update(sql, requestDto.getTodo(), requestDto.getManager(), LocalDateTime.now(),id);
+                schedule = findById(id);
+                return new ScheduleResponseDto(schedule);
+            }else {
+                throw new IllegalAccessException("비밀번호가 일치하지 않습니다.");
+            }
+        }else {
+            throw new IllegalAccessException("해당 일정은 존재하지 않습니다.");
+        }
+    }
+
 
     private Schedule findById (Long id) {
         String sql = "SELECT * FROM schedule WHERE scheduleId = ?";
