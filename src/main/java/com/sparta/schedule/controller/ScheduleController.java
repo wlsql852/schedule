@@ -63,10 +63,11 @@ public class ScheduleController {
 
     //3단계 : 일정 목록 조회
     @GetMapping("/schedules")
-    public List<ScheduleResponseDto> getSchedules (@RequestParam(required = false)String UpdateDay, @RequestParam(required = false)String managerName) {
+    public List<ScheduleResponseDto> getSchedules (@RequestParam(required = false)String updateDay, @RequestParam(required = false)String managerName) {
         //둘다 있는 경우
-        if(UpdateDay!=null && managerName != null) {
-            String sql = "SELECT * FROM schedule WHERE UpdateDate is ? AND manager = ?";
+        if(updateDay!=null && managerName != null) {
+            String date = updateDay.substring(0,4)+"-"+updateDay.substring(4,6)+"-"+updateDay.substring(6,8);
+            String sql = "SELECT * FROM schedule WHERE DATE (updateDate) = ? AND manager = ? ORDER BY updateDate DESC";
             return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
                 @Override
                 public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -77,10 +78,11 @@ public class ScheduleController {
                     Object updateDate = rs.getObject("updateDate");
                     return new ScheduleResponseDto(id, todo, manager, createDate, updateDate);
                 }
-            }, UpdateDay, managerName);
+            }, updateDay, managerName);
             //수정날짜만 있는 경우
-        } else if (UpdateDay!=null) {
-            String sql = "SELECT * FROM schedule WHERE UpdateDate is ?";
+        } else if (updateDay!=null) {
+            String date = updateDay.substring(0,4)+"-"+updateDay.substring(4,6)+"-"+updateDay.substring(6,8);
+            String sql = "SELECT * FROM schedule WHERE DATE (updateDate) = ? ORDER BY updateDate DESC";
             return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
                 @Override
                 public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -91,10 +93,10 @@ public class ScheduleController {
                     Object updateDate = rs.getObject("updateDate");
                     return new ScheduleResponseDto(id, todo, manager, createDate, updateDate);
                 }
-            }, UpdateDay);
+            }, date);
             //매니저 이름만 있는 경우
         } else if (managerName!=null) {
-            String sql = "SELECT * FROM schedule WHERE manager = ?";
+            String sql = "SELECT * FROM schedule WHERE manager = ? ORDER BY updateDate DESC";
             return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
                 @Override
                 public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -107,7 +109,7 @@ public class ScheduleController {
                 }
             }, managerName);
         }else {
-            String sql = "SELECT * FROM schedule ";
+            String sql = "SELECT * FROM schedule ORDER BY updateDate DESC";
             return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
                 @Override
                 public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -139,6 +141,21 @@ public class ScheduleController {
         }
     }
 
+    //5단계 : 선택한 일정 삭제
+    @DeleteMapping("/schedules/delete/{id}")
+    public void delete(@PathVariable Long id, @RequestBody ScheduleRequestDto requestDto) throws IllegalAccessException {
+        Schedule schedule = findById(id);
+        if(schedule != null) {
+            if(schedule.getPassword().equals(requestDto.getPassword())) {
+                String sql = "DELETE FROM schedule WHERE scheduleId = ?";
+                jdbcTemplate.update(sql,id);
+            }else {
+                throw new IllegalAccessException("비밀번호가 일치하지 않습니다.");
+            }
+        }else {
+            throw new IllegalAccessException("해당 일정은 존재하지 않습니다.");
+        }
+    }
 
     private Schedule findById (Long id) {
         String sql = "SELECT * FROM schedule WHERE scheduleId = ?";
