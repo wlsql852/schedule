@@ -63,19 +63,63 @@ public class ScheduleController {
 
     //3단계 : 일정 목록 조회
     @GetMapping("/schedules")
-    public List<ScheduleResponseDto> getAllSchedules () {
-        String sql = "SELECT * FROM schedule";
-        return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
-            @Override
-            public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Long id = rs.getLong("scheduleId");
-                String todo = rs.getString("todo");
-                String manager = rs.getString("manager");
-                Object createDate = rs.getObject("createDate");
-                Object updateDate = rs.getObject("updateDate");
-                return new ScheduleResponseDto(id, todo, manager, createDate, updateDate);
-            }
-        });
+    public List<ScheduleResponseDto> getSchedules (@RequestParam(required = false)String UpdateDay, @RequestParam(required = false)String managerName) {
+        //둘다 있는 경우
+        if(UpdateDay!=null && managerName != null) {
+            String sql = "SELECT * FROM schedule WHERE UpdateDate is ? AND manager = ?";
+            return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
+                @Override
+                public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Long id = rs.getLong("scheduleId");
+                    String todo = rs.getString("todo");
+                    String manager = rs.getString("manager");
+                    Object createDate = rs.getObject("createDate");
+                    Object updateDate = rs.getObject("updateDate");
+                    return new ScheduleResponseDto(id, todo, manager, createDate, updateDate);
+                }
+            }, UpdateDay, managerName);
+            //수정날짜만 있는 경우
+        } else if (UpdateDay!=null) {
+            String sql = "SELECT * FROM schedule WHERE UpdateDate is ?";
+            return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
+                @Override
+                public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Long id = rs.getLong("scheduleId");
+                    String todo = rs.getString("todo");
+                    String manager = rs.getString("manager");
+                    Object createDate = rs.getObject("createDate");
+                    Object updateDate = rs.getObject("updateDate");
+                    return new ScheduleResponseDto(id, todo, manager, createDate, updateDate);
+                }
+            }, UpdateDay);
+            //매니저 이름만 있는 경우
+        } else if (managerName!=null) {
+            String sql = "SELECT * FROM schedule WHERE manager = ?";
+            return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
+                @Override
+                public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Long id = rs.getLong("scheduleId");
+                    String todo = rs.getString("todo");
+                    String manager = rs.getString("manager");
+                    Object createDate = rs.getObject("createDate");
+                    Object updateDate = rs.getObject("updateDate");
+                    return new ScheduleResponseDto(id, todo, manager, createDate, updateDate);
+                }
+            }, managerName);
+        }else {
+            String sql = "SELECT * FROM schedule ";
+            return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
+                @Override
+                public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Long id = rs.getLong("scheduleId");
+                    String todo = rs.getString("todo");
+                    String manager = rs.getString("manager");
+                    Object createDate = rs.getObject("createDate");
+                    Object updateDate = rs.getObject("updateDate");
+                    return new ScheduleResponseDto(id, todo, manager, createDate, updateDate);
+                }
+            });
+        }
     }
 
     private Schedule findById (Long id) {
