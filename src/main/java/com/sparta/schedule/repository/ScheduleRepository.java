@@ -22,7 +22,7 @@ public class ScheduleRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
+    //데이터 insert
     public Schedule save(Schedule schedule) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -42,6 +42,7 @@ public class ScheduleRepository {
         schedule.setId(id);
         return schedule;
     }
+    //조회된 일정 리스트 (검색조건 : 수정날짜, 매니저이름, 값이 없으면 null)
     public List<ScheduleResponseDto> schedules(String updateDay, String managerName) {
         //둘다 있는 경우
         if(updateDay !=null && managerName != null) {
@@ -62,13 +63,14 @@ public class ScheduleRepository {
             return jdbcTemplate.query(sql, getRowMapper());
         }
     }
-
+    //일정 수정
     public  Schedule update(Long id, ScheduleRequestDto requestDto) {
         String sql = "UPDATE schedule SET todo=?, manager=?, updateDate=? WHERE scheduleId = ?";
         jdbcTemplate.update(sql, requestDto.getTodo(), requestDto.getManager(), LocalDateTime.now(),id);
         return findById(id);
     }
 
+    //아이디로 일정 찾는 함수
     public Schedule findById(Long id) {
         String sql = "SELECT * FROM schedule WHERE scheduleId = ?";
         return jdbcTemplate.query(sql, resultSet -> {
@@ -86,12 +88,12 @@ public class ScheduleRepository {
             }
         },id);
     }
-
+    //해당 아이디를 가진 일정 지우기
     public void delete(Long id) {
         String sql = "DELETE FROM schedule WHERE scheduleId = ?";
         jdbcTemplate.update(sql,id);
     }
-
+    //sql로 검색한 결과를 mapRow형태로 가져오기(다건 조회처럼 여러개일때 사용)
     private RowMapper<ScheduleResponseDto> getRowMapper() {
         return new RowMapper<ScheduleResponseDto>() {
             @Override
