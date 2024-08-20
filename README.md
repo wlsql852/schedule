@@ -5,5 +5,6 @@
 
 
 ### 2. ERD
-![image](https://github.com/user-attachments/assets/0b2cb3d9-47f9-4c10-8731-0f481178f50d)
+![image](https://github.com/user-attachments/assets/abcee2ce-253b-433f-9c5f-28212c0f1981)
+
 
