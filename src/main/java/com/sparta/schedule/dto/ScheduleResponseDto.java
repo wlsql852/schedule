@@ -10,22 +10,22 @@ import java.time.LocalDateTime;
 public class ScheduleResponseDto {
     private Long id;
     private String todo;
-    private String manager;
+    private Long managerId;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
 
     public ScheduleResponseDto(Schedule schedule) {
         this.id = schedule.getId();
         this.todo = schedule.getTodo();
-        this.manager = schedule.getManager();
+        this.managerId = schedule.getManagerId();
         this.createDate = schedule.getCreateDate();
         this.updateDate = schedule.getUpdateDate();
     }
 
-    public ScheduleResponseDto(Long id, String todo,String manager, Object createDate, Object updateDate) {
+    public ScheduleResponseDto(Long id, String todo, Long managerId, Object createDate, Object updateDate) {
         this.id = id;
         this.todo = todo;
-        this.manager = manager;
+        this.managerId = managerId;
         this.createDate = (LocalDateTime) createDate;
         this.updateDate = (LocalDateTime) updateDate;
     }

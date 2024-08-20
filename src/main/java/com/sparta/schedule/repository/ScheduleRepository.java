@@ -31,7 +31,7 @@ public class ScheduleRepository {
             PreparedStatement ps = con.prepareStatement(sql,
                     Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, schedule.getTodo());
-            ps.setString(2, schedule.getManager());
+            ps.setLong(2, schedule.getManagerId());
             ps.setString(3, schedule.getPassword());
             ps.setObject(4, schedule.getCreateDate());
             ps.setObject(5, schedule.getUpdateDate());
@@ -66,7 +66,7 @@ public class ScheduleRepository {
     //일정 수정
     public  Schedule update(Long id, ScheduleRequestDto requestDto) {
         String sql = "UPDATE schedule SET todo=?, manager=?, updateDate=? WHERE scheduleId = ?";
-        jdbcTemplate.update(sql, requestDto.getTodo(), requestDto.getManager(), LocalDateTime.now(),id);
+        jdbcTemplate.update(sql, requestDto.getTodo(), requestDto.getManagerId(), LocalDateTime.now(),id);
         return findById(id);
     }
 
@@ -78,7 +78,7 @@ public class ScheduleRepository {
                 Schedule schedule = new Schedule();
                 schedule.setId(resultSet.getLong("scheduleId"));
                 schedule.setTodo(resultSet.getString("todo"));
-                schedule.setManager(resultSet.getString("manager"));
+                schedule.setManagerId(resultSet.getLong("manager"));
                 schedule.setPassword(resultSet.getString("password"));
                 schedule.setCreateDate((LocalDateTime) resultSet.getObject("createDate"));
                 schedule.setUpdateDate((LocalDateTime) resultSet.getObject("updateDate"));
@@ -100,10 +100,10 @@ public class ScheduleRepository {
             public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Long id = rs.getLong("scheduleId");
                 String todo = rs.getString("todo");
-                String manager = rs.getString("manager");
+                Long managerId = rs.getLong("managerId");
                 Object createDate = rs.getObject("createDate");
                 Object updateDate = rs.getObject("updateDate");
-                return new ScheduleResponseDto(id, todo, manager, createDate, updateDate);
+                return new ScheduleResponseDto(id, todo, managerId, createDate, updateDate);
             }
         };
     }
