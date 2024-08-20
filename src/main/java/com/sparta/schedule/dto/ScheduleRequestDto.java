@@ -10,6 +10,4 @@ public class ScheduleRequestDto {
     private String todo;
     private Long managerId;
     private String password;
-    private LocalDateTime createDate;
-    private LocalDateTime updateDate;
 }
