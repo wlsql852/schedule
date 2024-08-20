@@ -26,7 +26,7 @@ public class ScheduleRepository {
     public Schedule save(Schedule schedule) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        String sql = "INSERT INTO schedule (todo, manager, password, createDate, updateDate) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO schedule (todo, managerId, password, createDate, updateDate) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql,
                     Statement.RETURN_GENERATED_KEYS);
