@@ -19,9 +19,11 @@ import java.util.List;
 @Repository
 public class ScheduleRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final ManagerRepository managerRepository;
 
-    public ScheduleRepository(final JdbcTemplate jdbcTemplate) {
+    public ScheduleRepository(final JdbcTemplate jdbcTemplate, ManagerRepository managerRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.managerRepository = managerRepository;
     }
 
     //데이터 insert
@@ -48,9 +50,11 @@ public class ScheduleRepository {
     public List<ScheduleResponseDto> schedules(String updateDay, String managerName) {
         //둘다 있는 경우
         if(updateDay !=null && managerName != null) {
+            //매니저이름으로 아이디 찾기
+            Long managerId = managerRepository.getManagerIdByName(managerName);
             String date = updateDay.substring(0,4)+"-"+ updateDay.substring(4,6)+"-"+ updateDay.substring(6,8);
-            String sql = "SELECT * FROM schedule WHERE DATE (updateDate) = ? AND manager = ? ORDER BY updateDate DESC";
-            return jdbcTemplate.query(sql, getRowMapper(), updateDay, managerName);
+            String sql = "SELECT * FROM schedule WHERE DATE (updateDate) = ? AND managerId = ? ORDER BY updateDate DESC";
+            return jdbcTemplate.query(sql, getRowMapper(), updateDay, managerId);
             //수정날짜만 있는 경우
         } else if (updateDay !=null) {
             String date = updateDay.substring(0,4)+"-"+ updateDay.substring(4,6)+"-"+ updateDay.substring(6,8);
@@ -58,8 +62,10 @@ public class ScheduleRepository {
             return jdbcTemplate.query(sql, getRowMapper(), date);
             //매니저 이름만 있는 경우
         } else if (managerName !=null) {
-            String sql = "SELECT * FROM schedule WHERE manager = ? ORDER BY updateDate DESC";
-            return jdbcTemplate.query(sql, getRowMapper(), managerName);
+            //매니저이름으로 아이디 찾기
+            Long managerId = managerRepository.getManagerIdByName(managerName);
+            String sql = "SELECT * FROM schedule WHERE managerId = ? ORDER BY updateDate DESC";
+            return jdbcTemplate.query(sql, getRowMapper(), managerId);
         }else {
             String sql = "SELECT * FROM schedule ORDER BY updateDate DESC";
             return jdbcTemplate.query(sql, getRowMapper());
@@ -67,7 +73,7 @@ public class ScheduleRepository {
     }
     //일정 수정
     public  Schedule update(Long id, ScheduleRequestDto requestDto) {
-        String sql = "UPDATE schedule SET todo=?, manager=?, updateDate=? WHERE scheduleId = ?";
+        String sql = "UPDATE schedule SET todo=?, managerId=?, updateDate=? WHERE scheduleId = ?";
         jdbcTemplate.update(sql, requestDto.getTodo(), requestDto.getManagerId(), LocalDateTime.now(),id);
         return findById(id);
     }
@@ -80,7 +86,7 @@ public class ScheduleRepository {
                 Schedule schedule = new Schedule();
                 schedule.setId(resultSet.getLong("scheduleId"));
                 schedule.setTodo(resultSet.getString("todo"));
-                schedule.setManagerId(resultSet.getLong("manager"));
+                schedule.setManagerId(resultSet.getLong("managerId"));
                 schedule.setPassword(resultSet.getString("password"));
                 schedule.setCreateDate((LocalDateTime) resultSet.getObject("createDate"));
                 schedule.setUpdateDate((LocalDateTime) resultSet.getObject("updateDate"));
@@ -109,4 +115,6 @@ public class ScheduleRepository {
             }
         };
     }
+
+
 }

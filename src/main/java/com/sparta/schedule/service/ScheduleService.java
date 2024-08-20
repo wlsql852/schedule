@@ -40,7 +40,7 @@ public class ScheduleService {
         }
     }
     //다건 조회
-    public List<ScheduleResponseDto> getSchedules(String updateDay, String managerName) {
+    public List<ScheduleResponseDto> getSchedules(String updateDay, String managerName){
         //데이터에서 updateDay와 managerName으로 검색한 데이터를 리스트 형태로 가져오기
         return scheduleRepository.schedules(updateDay,managerName);
 

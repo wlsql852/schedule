@@ -15,3 +15,6 @@ CREATE TABLE IF NOT EXISTS SCHEDULE (
     updateDate datetime comment '수정날짜',
     CONSTRAINT foreign key (managerId) references MANAGER(managerId) ON DELETE CASCADE
     );
+
+ALTER TABLE MANAGER MODIFY managerId  bigint AUTO_INCREMENT;
+ALTER TABLE SCHEDULE MODIFY scheduleId  bigint AUTO_INCREMENT;

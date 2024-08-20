@@ -1,5 +1,6 @@
 package com.sparta.schedule.entity;
 
+import com.sparta.schedule.dto.ManagerRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,4 +16,12 @@ public class Manager {
     private String email;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
+
+    public Manager(ManagerRequestDto requestDto) {
+        this.name = requestDto.getName();
+        this.email = requestDto.getEmail();
+        LocalDateTime now = LocalDateTime.now();
+        this.createDate = now;
+        this.updateDate = now;
+    }
 }
