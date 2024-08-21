@@ -1,7 +1,8 @@
 ## 개인과제 : 일정관리 앱 서버 만들기
 
 ### 1. api 명세서 
-![image](https://github.com/user-attachments/assets/778eeb1c-aba1-43b7-a9d9-356dff1156dc)
+![image](https://github.com/user-attachments/assets/39d944ea-9764-472b-9377-f463d1c1f7e3)
+
 
 
 ### 2. ERD
