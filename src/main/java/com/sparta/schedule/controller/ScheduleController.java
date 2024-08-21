@@ -20,8 +20,12 @@ public class ScheduleController {
     public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
-
-    //1단계 : 일정 생성
+    
+    /*
+     * 1단계 : 일정 생성
+     * @Param 일정 등록 정보
+     * @Return 일정 등록 정보
+     * */
     @PostMapping("/schedules")
     public ScheduleResponseDto createSchedule (@Valid @RequestBody ScheduleRequestDto requestDto, Errors errors) {
         //@Valid를 충족시키지 않으면
@@ -34,14 +38,22 @@ public class ScheduleController {
         }
     }
 
-    //2단계 : 해당 일정 조회
+    /*
+     * 2단계 : 해당 일정 조회
+     * @Param 검색할 일정 아이디
+     * @Return 일정 등록 정보
+     * */
     @GetMapping("/schedules/{scheduleId}")
     public ScheduleResponseDto getSchedule(@PathVariable Long scheduleId) throws IllegalAccessException {
         return scheduleService.getSchedule(scheduleId);
 
     }
 
-    //3단계 : 일정 목록 조회
+    /*
+     * 3단계 : 일정 목록 조회
+     * @Param 수정일, 매니저 이름
+     * @Return 일정 정보 목록
+     * */
     @GetMapping("/schedules")
     public List<ScheduleResponseDto> getSchedules (@RequestParam(required = false)String updateDay, @RequestParam(required = false)String managerName) {
         return scheduleService.getSchedules(updateDay, managerName);
@@ -49,7 +61,11 @@ public class ScheduleController {
 
 
 
-    //4단계 : 선택한 일정 수정
+    /*
+     * 4단계 : 선택한 일정 수정
+     * @Param 수정한 일정 등록 정보
+     * @Return 일정 등록 정보
+     * */
     @PutMapping("/schedules/edit/{id}")
     public ScheduleResponseDto update(@PathVariable Long id, @Valid @RequestBody ScheduleRequestDto requestDto , Errors errors) throws IllegalAccessException {
         //@Valid를 충족시키지 않으면
@@ -62,7 +78,11 @@ public class ScheduleController {
         }
     }
 
-    //5단계 : 선택한 일정 삭제
+    /*
+     * 5단계 : 선택한 일정 삭제
+     * @Param 일정 아이디와 비밀번호가 담긴 request
+     * @Return 없음
+     * */
     @DeleteMapping("/schedules/delete/{id}")
     public void delete(@PathVariable Long id, @Valid @RequestBody ScheduleRequestDto requestDto, Errors errors) throws IllegalAccessException {
         //@Valid를 충족시키지 않으면
