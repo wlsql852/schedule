@@ -39,11 +39,24 @@ public class ManagerRepository {
 
     public Long getManagerIdByName(String name) {
         String sql = "SELECT managerId FROM manager WHERE name = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, name);
+        if(name!=null) {
+            try{
+                return jdbcTemplate.queryForObject(sql, Long.class, name);
+            } catch (Exception e){
+                throw new IllegalArgumentException("해당 이름의 매니저가 없습니다");
+            }
+        }else {
+            return null;
+        }
+
     }
     public String getManagerNameById(Long id) {
         String sql = "SELECT name FROM manager WHERE managerId = ?";
-        return jdbcTemplate.queryForObject(sql, String.class, id);
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, id);
+        }catch (Exception e){
+            throw new IllegalArgumentException("해당 아이디의 매니저가 없습니다");
+        }
     }
 
     public Manager findById(Long id) {

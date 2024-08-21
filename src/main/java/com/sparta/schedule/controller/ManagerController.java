@@ -2,8 +2,15 @@ package com.sparta.schedule.controller;
 
 import com.sparta.schedule.dto.ManagerRequestDto;
 import com.sparta.schedule.dto.ManagerResponseDto;
+import com.sparta.schedule.error.ValidateExceptionMsg;
 import com.sparta.schedule.service.ManagerService;
+import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Iterator;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -21,8 +28,16 @@ public class ManagerController {
     * @Return 매니저 등록 정보
     * */
     @PostMapping("/managers")
-    public ManagerResponseDto createManager(@RequestBody ManagerRequestDto requestDto) {
-        return managerService.createManager(requestDto);
+    public ManagerResponseDto createManager(@Valid @RequestBody ManagerRequestDto requestDto, Errors errors) {
+        if(errors.hasErrors()) {
+            Map<String, String> validatorResult = new ValidateExceptionMsg().validateHandling(errors);
+            Iterator iter = validatorResult.keySet().iterator();
+            String errorName = iter.next().toString();
+            String errormsg = errorName.split("_")[1]+"(이)가 "+validatorResult.get(errorName);
+            throw new ValidationException(errormsg);
+        }else {
+            return managerService.createManager(requestDto);
+        }
     }
 
     /*
@@ -33,5 +48,8 @@ public class ManagerController {
     public ManagerResponseDto getManager(@PathVariable Long managerId) throws IllegalAccessException {
         return managerService.getManager(managerId);
     }
+
+
+
 
 }

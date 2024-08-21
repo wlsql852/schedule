@@ -11,9 +11,11 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final ManagerService managerService;
 
-    public ScheduleService(ScheduleRepository scheduleRepository) {
+    public ScheduleService(ScheduleRepository scheduleRepository, ManagerService managerService) {
         this.scheduleRepository = scheduleRepository;
+        this.managerService = managerService;
     }
 
 
@@ -24,7 +26,7 @@ public class ScheduleService {
         //레포지토리에서 스케줄 생성하기
         Schedule saveSchedule = scheduleRepository.save(schedule);
         //생성된 스케줄을 responseDto형태로 바꿔서 내보내기
-        ScheduleResponseDto responseDto = new ScheduleResponseDto(saveSchedule);
+        ScheduleResponseDto responseDto = new ScheduleResponseDto(saveSchedule, managerService.getManagerNameById(saveSchedule.getManagerId()));
         return responseDto;
     }
     //단건 조회
@@ -33,7 +35,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId);
         //있으면 해당 일정 responseDto형태로 내보내기
         if(schedule != null) {
-            return new ScheduleResponseDto(schedule);
+            return new ScheduleResponseDto(schedule, managerService.getManagerNameById(schedule.getManagerId()));
         }else {
             //없으면 에러
             throw new IllegalAccessException("해당 일정은 존재하지 않습니다.");
@@ -41,8 +43,10 @@ public class ScheduleService {
     }
     //다건 조회
     public List<ScheduleResponseDto> getSchedules(String updateDay, String managerName){
+        //매니저 이름으로 id값 찾기
+        Long managerId = managerService.getManagerIdByName(managerName);
         //데이터에서 updateDay와 managerName으로 검색한 데이터를 리스트 형태로 가져오기
-        return scheduleRepository.schedules(updateDay,managerName);
+        return scheduleRepository.schedules(updateDay,managerId);
 
     }
     //일정 수정
@@ -55,7 +59,7 @@ public class ScheduleService {
                 //비밀번호까지 일치하면 수정 후 수정된 정보 가져오기
                 Schedule updateSchedule = scheduleRepository.update(id, requestDto);
                 //수정된 정보를 responseDto로 보내주기
-                return new ScheduleResponseDto(updateSchedule);
+                return new ScheduleResponseDto(updateSchedule, managerService.getManagerNameById(updateSchedule.getManagerId()));
             }else {
                 throw new IllegalAccessException("비밀번호가 일치하지 않습니다.");
             }
@@ -82,4 +86,7 @@ public class ScheduleService {
     }
 
 
+    public List<ScheduleResponseDto> getschedulespaging(int pagesize, int page) {
+        return scheduleRepository.getschedulespaging(pagesize, page);
+    }
 }

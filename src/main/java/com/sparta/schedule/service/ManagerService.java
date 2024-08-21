@@ -32,4 +32,11 @@ public class ManagerService {
             throw new IllegalAccessException("해당 매니저는 없습니다");
         }
     }
+    public Long getManagerIdByName(String name) {
+        return managerRepository.getManagerIdByName(name);
+    }
+    public String getManagerNameById(Long managerId) {
+        return managerRepository.getManagerNameById(managerId);
+    }
+
 }

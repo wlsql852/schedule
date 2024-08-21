@@ -19,11 +19,9 @@ import java.util.List;
 @Repository
 public class ScheduleRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final ManagerRepository managerRepository;
 
-    public ScheduleRepository(final JdbcTemplate jdbcTemplate, ManagerRepository managerRepository) {
+    public ScheduleRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.managerRepository = managerRepository;
     }
 
     //데이터 insert
@@ -47,27 +45,25 @@ public class ScheduleRepository {
         return schedule;
     }
     //조회된 일정 리스트 (검색조건 : 수정날짜, 매니저이름, 값이 없으면 null)
-    public List<ScheduleResponseDto> schedules(String updateDay, String managerName) {
+    public List<ScheduleResponseDto> schedules(String updateDay, Long managerId) {
         //둘다 있는 경우
-        if(updateDay !=null && managerName != null) {
+        if(updateDay !=null && managerId != null) {
             //매니저이름으로 아이디 찾기
-            Long managerId = managerRepository.getManagerIdByName(managerName);
             String date = updateDay.substring(0,4)+"-"+ updateDay.substring(4,6)+"-"+ updateDay.substring(6,8);
-            String sql = "SELECT * FROM schedule WHERE DATE (updateDate) = ? AND managerId = ? ORDER BY updateDate DESC";
+            String sql = "SELECT s.scheduleId, s.todo, s.password, s.createDate, s.updateDate, m.managerId, m.name managerName FROM SCHEDULE s JOIN MANAGER m ON s.managerId= m.managerId WHERE DATE (s.updateDate) = ? AND m.managerId = ? ORDER BY s.updateDate DESC";
             return jdbcTemplate.query(sql, getRowMapper(), updateDay, managerId);
             //수정날짜만 있는 경우
         } else if (updateDay !=null) {
             String date = updateDay.substring(0,4)+"-"+ updateDay.substring(4,6)+"-"+ updateDay.substring(6,8);
-            String sql = "SELECT * FROM schedule WHERE DATE (updateDate) = ? ORDER BY updateDate DESC";
+            String sql = "SELECT s.scheduleId, s.todo, s.password, s.createDate, s.updateDate, m.managerId, m.name managerName FROM SCHEDULE s JOIN MANAGER m ON s.managerId= m.managerId WHERE DATE (s.updateDate) = ? ORDER BY s.updateDate DESC";
             return jdbcTemplate.query(sql, getRowMapper(), date);
             //매니저 이름만 있는 경우
-        } else if (managerName !=null) {
+        } else if (managerId !=null) {
             //매니저이름으로 아이디 찾기
-            Long managerId = managerRepository.getManagerIdByName(managerName);
-            String sql = "SELECT * FROM schedule WHERE managerId = ? ORDER BY updateDate DESC";
+            String sql = "SELECT s.scheduleId, s.todo, s.password, s.createDate, s.updateDate, m.managerId, m.name managerName FROM SCHEDULE s JOIN MANAGER m ON s.managerId= m.managerId WHERE m.managerId = ? ORDER BY s.updateDate DESC";
             return jdbcTemplate.query(sql, getRowMapper(), managerId);
         }else {
-            String sql = "SELECT * FROM schedule ORDER BY updateDate DESC";
+            String sql = "SELECT s.scheduleId, s.todo, s.password, s.createDate, s.updateDate, m.managerId, m.name managerName FROM SCHEDULE s JOIN MANAGER m ON s.managerId= m.managerId ORDER BY s.updateDate DESC";
             return jdbcTemplate.query(sql, getRowMapper());
         }
     }
@@ -108,13 +104,27 @@ public class ScheduleRepository {
             public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Long id = rs.getLong("scheduleId");
                 String todo = rs.getString("todo");
-                Long managerId = rs.getLong("managerId");
+                String managerName = rs.getString("managerName");
                 Object createDate = rs.getObject("createDate");
                 Object updateDate = rs.getObject("updateDate");
-                return new ScheduleResponseDto(id, todo, managerId, createDate, updateDate);
+                return new ScheduleResponseDto(id, todo, managerName, createDate, updateDate);
             }
         };
     }
 
-
+    //해당 페이지의 일정 목록 가져오기
+    public List<ScheduleResponseDto> getschedulespaging(int pagesize, int page) {
+        String sql = "SELECT s.scheduleId, s.todo, s.password, s.createDate, s.updateDate, m.managerId, m.name managerName FROM SCHEDULE s JOIN MANAGER m ON s.managerId= m.managerId LIMIT ? OFFSET ?";
+        return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
+            @Override
+            public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Long id = rs.getLong("scheduleId");
+                String todo = rs.getString("todo");
+                String managerName = rs.getString("managerName");
+                LocalDateTime createDate = rs.getObject("createDate", LocalDateTime.class);
+                LocalDateTime updateDate = rs.getObject("updateDate", LocalDateTime.class);
+                return new ScheduleResponseDto(id, todo, managerName, createDate, updateDate);
+            }
+        }, pagesize, (page-1)*pagesize);
+    }
 }

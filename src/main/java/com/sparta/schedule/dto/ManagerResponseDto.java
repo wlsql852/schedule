@@ -20,4 +20,12 @@ public class ManagerResponseDto {
         this.createDate = manager.getCreateDate();
         this.updateDate = manager.getUpdateDate();
     }
+
+    public ManagerResponseDto(Long id, String name, String email, LocalDateTime createDate, LocalDateTime updateDate) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+    }
 }
