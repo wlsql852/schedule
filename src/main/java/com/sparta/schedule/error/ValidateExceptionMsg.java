@@ -5,6 +5,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 @Getter
@@ -21,5 +22,12 @@ public class ValidateExceptionMsg {
             String validKeyName = String.format("valid_%s", error.getField());
             validatorResult.put(validKeyName, error.getDefaultMessage());        }
         return validatorResult;
+    }
+
+    public String getVaildExceptionMsg(Errors errors) {
+        Map<String, String> validatorResult = validateHandling(errors);
+        Iterator iter = validatorResult.keySet().iterator();
+        String errorName = iter.next().toString();
+        return errorName.split("_")[1]+"(이)가 "+validatorResult.get(errorName);
     }
 }

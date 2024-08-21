@@ -27,10 +27,7 @@ public class ScheduleController {
     @PostMapping("/schedules")
     public ScheduleResponseDto createSchedule (@Valid @RequestBody ScheduleRequestDto requestDto, Errors errors) {
         if(errors.hasErrors()) {
-            Map<String, String> validatorResult = new ValidateExceptionMsg().validateHandling(errors);
-            Iterator<String> iter = validatorResult.keySet().iterator();
-            String errorName = iter.next().toString();
-            String errormsg = errorName.split("_")[1]+"(이)가 "+validatorResult.get(errorName);
+            String errormsg = new ValidateExceptionMsg().getVaildExceptionMsg(errors);
             throw new ValidationException(errormsg);
         }else {
             return scheduleService.createSchedule(requestDto);
@@ -56,10 +53,7 @@ public class ScheduleController {
     @PutMapping("/schedules/edit/{id}")
     public ScheduleResponseDto update(@PathVariable Long id, @Valid @RequestBody ScheduleRequestDto requestDto , Errors errors) throws IllegalAccessException {
         if(errors.hasErrors()) {
-            Map<String, String> validatorResult = new ValidateExceptionMsg().validateHandling(errors);
-            Iterator<String> iter = validatorResult.keySet().iterator();
-            String errorName = iter.next().toString();
-            String errormsg = errorName.split("_")[1]+"(이)가 "+validatorResult.get(errorName);
+            String errormsg = new ValidateExceptionMsg().getVaildExceptionMsg(errors);
             throw new ValidationException(errormsg);
         }else {
             return scheduleService.update(id, requestDto);
@@ -70,10 +64,7 @@ public class ScheduleController {
     @DeleteMapping("/schedules/delete/{id}")
     public void delete(@PathVariable Long id, @Valid @RequestBody ScheduleRequestDto requestDto, Errors errors) throws IllegalAccessException {
         if(errors.hasErrors()) {
-            Map<String, String> validatorResult = new ValidateExceptionMsg().validateHandling(errors);
-            Iterator<String> iter = validatorResult.keySet().iterator();
-            String errorName = iter.next().toString();
-            String errormsg = errorName.split("_")[1]+"(이)가 "+validatorResult.get(errorName);
+            String errormsg = new ValidateExceptionMsg().getVaildExceptionMsg(errors);
             throw new ValidationException(errormsg);
         }else {
             scheduleService.delete(id, requestDto);

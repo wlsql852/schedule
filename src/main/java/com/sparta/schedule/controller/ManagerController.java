@@ -30,10 +30,7 @@ public class ManagerController {
     @PostMapping("/managers")
     public ManagerResponseDto createManager(@Valid @RequestBody ManagerRequestDto requestDto, Errors errors) {
         if(errors.hasErrors()) {
-            Map<String, String> validatorResult = new ValidateExceptionMsg().validateHandling(errors);
-            Iterator iter = validatorResult.keySet().iterator();
-            String errorName = iter.next().toString();
-            String errormsg = errorName.split("_")[1]+"(이)가 "+validatorResult.get(errorName);
+            String errormsg = new ValidateExceptionMsg().getVaildExceptionMsg(errors);
             throw new ValidationException(errormsg);
         }else {
             return managerService.createManager(requestDto);
