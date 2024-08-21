@@ -9,9 +9,7 @@ import jakarta.validation.ValidationException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -26,7 +24,9 @@ public class ScheduleController {
     //1단계 : 일정 생성
     @PostMapping("/schedules")
     public ScheduleResponseDto createSchedule (@Valid @RequestBody ScheduleRequestDto requestDto, Errors errors) {
+        //@Valid를 충족시키지 않으면
         if(errors.hasErrors()) {
+            //해당 문제의 메세지를 만들어 오류 날리기
             String errormsg = new ValidateExceptionMsg().getVaildExceptionMsg(errors);
             throw new ValidationException(errormsg);
         }else {
@@ -52,7 +52,9 @@ public class ScheduleController {
     //4단계 : 선택한 일정 수정
     @PutMapping("/schedules/edit/{id}")
     public ScheduleResponseDto update(@PathVariable Long id, @Valid @RequestBody ScheduleRequestDto requestDto , Errors errors) throws IllegalAccessException {
+        //@Valid를 충족시키지 않으면
         if(errors.hasErrors()) {
+            //해당 문제의 메세지를 만들어 오류 날리기
             String errormsg = new ValidateExceptionMsg().getVaildExceptionMsg(errors);
             throw new ValidationException(errormsg);
         }else {
@@ -63,7 +65,9 @@ public class ScheduleController {
     //5단계 : 선택한 일정 삭제
     @DeleteMapping("/schedules/delete/{id}")
     public void delete(@PathVariable Long id, @Valid @RequestBody ScheduleRequestDto requestDto, Errors errors) throws IllegalAccessException {
+        //@Valid를 충족시키지 않으면
         if(errors.hasErrors()) {
+            //해당 문제의 메세지를 만들어 오류 날리기
             String errormsg = new ValidateExceptionMsg().getVaildExceptionMsg(errors);
             throw new ValidationException(errormsg);
         }else {

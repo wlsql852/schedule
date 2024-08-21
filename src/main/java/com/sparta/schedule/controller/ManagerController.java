@@ -9,9 +9,6 @@ import jakarta.validation.ValidationException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Iterator;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api")
 public class ManagerController {
