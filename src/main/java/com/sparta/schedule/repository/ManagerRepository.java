@@ -1,14 +1,20 @@
 package com.sparta.schedule.repository;
 
+import com.sparta.schedule.dto.ManagerRequestDto;
+import com.sparta.schedule.dto.ManagerResponseDto;
 import com.sparta.schedule.entity.Manager;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public class ManagerRepository {
@@ -74,5 +80,31 @@ public class ManagerRepository {
                 return null;
             }
         }, id);
+    }
+
+    public List<ManagerResponseDto> getSchedules() {
+        String sql = "SELECT * FROM manager";
+        return jdbcTemplate.query(sql, new RowMapper<ManagerResponseDto>() {
+            @Override
+            public ManagerResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Long id = rs.getLong("managerId");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                LocalDateTime createDate = rs.getObject("createDate", LocalDateTime.class);
+                LocalDateTime updateDate = rs.getObject("updateDate", LocalDateTime.class);
+                return new ManagerResponseDto(id, name, email, createDate, updateDate);
+            }
+        });
+    }
+
+    public Manager update(Long id, ManagerRequestDto requestDto) {
+        String sql = "UPDATE manager SET name = ?, email = ?, updateDate = ? WHERE managerId = ?";
+        jdbcTemplate.update(sql, requestDto.getName(), requestDto.getEmail(), LocalDateTime.now(), id);
+        return findById(id);
+    }
+
+    public void delete(Long id) {
+        String sql = "DELETE FROM MANAGER WHERE managerId = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

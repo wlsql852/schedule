@@ -6,6 +6,8 @@ import com.sparta.schedule.entity.Manager;
 import com.sparta.schedule.repository.ManagerRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ManagerService {
     private final ManagerRepository managerRepository;
@@ -39,4 +41,27 @@ public class ManagerService {
         return managerRepository.getManagerNameById(managerId);
     }
 
+    public List<ManagerResponseDto> getSchedules() {
+        return managerRepository.getSchedules();
+    }
+
+    public ManagerResponseDto update(Long id, ManagerRequestDto requestDto) throws IllegalAccessException {
+        Manager manager = managerRepository.findById(id);
+        if (manager != null) {
+            Manager updateManager = managerRepository.update(id,requestDto);
+            return new ManagerResponseDto(updateManager);
+        }else {
+            throw new IllegalAccessException("해당 아이디의 매니저가 없습니다");
+        }
+    }
+
+
+    public void delete(Long id) throws IllegalAccessException {
+        Manager manager = managerRepository.findById(id);
+        if (manager != null) {
+            managerRepository.delete(id);
+        }else {
+            throw new IllegalAccessException("해당 아이디의 매니저가 없습니다");
+        }
+    }
 }
